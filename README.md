@@ -6,7 +6,7 @@ Please follow these steps to get familiar with Git.
 
 ## Step 0
 
-(For Team Leader) Please click "Use this template", and then click "Create a new repository". Name your new repository, then **set it to private**.
+(For Team Leader) Please create a new repository, name your new repository, then **set it to private**. You may need more information from searching manuals.
 
 ## Step 1
 
