@@ -132,7 +132,7 @@ class EventLike:
         code: int,
         *,
         prior: int = 100,
-        sender: _typing.Optional[str] = "",
+        sender: str = "",
         receivers: _typing.Set[str] = None,
         body: _typing.Optional[_typing.Dict[str, _typing.Any]] = None,
     ) -> None:
@@ -150,6 +150,11 @@ class EventLike:
         body : dict[str, typing.Any], default = {}
             事件附加信息
         """
+        assert isinstance(code, int)
+        assert isinstance(prior, int)
+        assert isinstance(sender, str)
+        assert isinstance(receivers, (set, None.__class__))
+        assert isinstance(body, (dict, None.__class__))
         self.code: int = code
         self.prior: int = prior
         self.sender: str = sender
@@ -214,6 +219,8 @@ class ListenerLike:
         监听的事件代码
     uuid : str
         监听者的通用唯一标识符, 一般是`str(id(self))`
+    post_api : Optional[PostEventApiLike]
+        发布事件函数, 一般使用`Core`的`add_event`
 
     Methods
     ---
@@ -289,17 +296,25 @@ class ListenerLike:
     @property
     def listen_codes(self) -> _typing.Set[int]:
         """
-        监听的事件代码集合
+        监听的事件代码集合, 返回所有被`tools.listening`装饰过的函数中, 包含的事件代码
 
         Notes
         ---
-        本属性集合所有被`basetools.listening`装饰过的函数的事件代码, 修改无效。
+        本属性不可修改
         """
         return set(self.__listen_methods)
 
     @listen_codes.setter
     def listen_codes(self, listen_codes: _typing.Set[int]):
         raise AttributeError("Can't set attribute `listen_codes`")
+
+    @property
+    def post_api(self) -> _typing.Optional[PostEventApiLike]:
+        return self.__post_api
+
+    @post_api.setter
+    def post_api(self, post_api: _typing.Optional[PostEventApiLike]) -> None:
+        self.__post_api = post_api
 
     @property
     def uuid(self) -> int:

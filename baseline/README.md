@@ -24,6 +24,15 @@
 
 > 箭头代表依赖关系，箭头指向被依赖的文件。
 
+* `base`——事件系统
+  * `tools.py`——工具函数/类提供（比如`listening`装饰器）
+  * `collections.py`——定义「事件队列`Core`」、「事件`Event`」、「监听者`ListenerLike`」三件套以及一些额外内容
+  * `constants.py`——常量集（比如事件代码`EventCode`等）
+* `game三件套`——常用游戏工具库
+  * `game_collections.py`——常用游戏实体（实体`EntityLike`以及场景`SceneLike`）
+  * `game_constants.py`——常量集（比如事件代码等）
+  * `utils.py`——杂项工具库
+
 ```mermaid
 classDiagram
 direction LR
@@ -86,21 +95,21 @@ scene <|-- handler
 
 ## 基类`base/collections.py`
 
-本文件定义了事件相关基础类型，本项目几乎全部游戏内容类都继承自`ListenerLike`。
+本文件定义了<u>事件相关基础类型</u>，本项目几乎全部游戏内容类都继承自`ListenerLike`。
 
 * `EventLike`
   *  事件
 * `ListenerLike`
-  * 监听器
+  * 监听器，主要实现`listen`和`post`方法
 * `GroupLike`
-  * 监听器群组
+  * 监听器群组，其`listen`方法接收的事件由群组处理，然后分配给其成员
 * `Core`
-  *  核心。管理事件队列、窗口、刻、`pygame api`。
+  *  核心。管理「事件队列」、「窗口」、「刻」以及一些「`pygame api`」
 
 ```mermaid
 classDiagram
 direction TB
-namespace base {
+namespace collections {
     class EventLike {
         +code : int
         +sender : str
@@ -114,6 +123,7 @@ namespace base {
         +listen_receivers : set[str]
         +listen_codes : set[int]
         +uuid : str
+        +post_api : Optional[PostEventApiLike]
         +post(event: EventLike) None
         +listen(event: EventLike) None
     }
@@ -136,7 +146,7 @@ namespace base {
         +clock: pygame.time.Clock
         +time_ms: int
         +rate: float
-        +yield_events() Generator[EventLike, None, None]
+        +yield_events(...) Generator[EventLike, None, None]
         +add_event(event EventLike) None
         +clear_event() None
         +get_step_event() EventLike
@@ -153,6 +163,11 @@ ListenerLike <|-- GroupLike
 ```
 
 ## 游戏基类`game_collections.py`
+
+* `EntityLike`
+  * 实现了`rect`、`mask`、`image`，并且能接收`DRAW`事件绘制自身
+* `SceneLike`
+  * 管理场景内容，并提供了图层机制（接收`DRAW`事件会根据图层顺序渲染场景实体）
 
 ```mermaid
 classDiagram
