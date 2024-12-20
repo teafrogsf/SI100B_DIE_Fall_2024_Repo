@@ -216,14 +216,18 @@ namespace game_collections {
 ```python
 class Player(ListenerLike):
     """
-    ...
+    
+    ...其他内容...
+    
     Listening Methods
     ---
     draw@DRAW
         绘制
     move@pygame.KEYDOWN, pygame.KEYUP
     	移动
-    ...
+    
+    ...其他内容...
+    
     """
     @listening(DRAW)
     def draw(self, event: EventLike):
