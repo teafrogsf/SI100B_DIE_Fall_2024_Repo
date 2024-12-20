@@ -560,7 +560,7 @@ class GroupLike(ListenerLike):
         KILL : KillEventBody
             suicide : str
                 即将被删除成员的UUID
-        
+
         Notes
         ---
         先找出所有UUID符合的成员, 然后调用`self.remove_listener`进行删除。
@@ -591,7 +591,9 @@ class Core:
         self.__winsize: _typing.Tuple[int, int] = (1280, 720)  # width, height
         self.__title: str = "The Bizarre Adventure of the Pufferfish"
         self.__rate: float = 0
-        self.__window: _pygame.Surface = _pygame.display.set_mode(self.winsize)
+        self.__window: _pygame.Surface = _pygame.display.set_mode(
+            self.winsize, _pygame.RESIZABLE
+        )
         self.__clock: _pygame.time.Clock = _pygame.time.Clock()
         self.__event_queue: _tools.BarrelQueue[EventLike] = _tools.BarrelQueue(
             GET_PRIOR
@@ -634,11 +636,18 @@ class Core:
         for event in core.yield_events():
             deal(event)
         ```
+
+        Notes
+        ---
+        `add_pygame_event=True`时, 会捕获`pygame.VIDEORESIZE`事件, 并更新窗口大小
         """
         if add_pygame_event:
-            self.__event_queue.extend(
-                (EventLike.from_pygame_event(i) for i in _pygame.event.get())
-            )
+            pygame_events = [
+                EventLike.from_pygame_event(i) for i in _pygame.event.get()
+            ]
+            self.__event_queue.extend(pygame_events)
+            for event in filter(lambda x: x.code == _pygame.VIDEORESIZE, pygame_events):
+                self.winsize = (event.w, event.h)
         if add_step:
             self.__event_queue.append(self.get_step_event())
         if add_draw:
@@ -681,7 +690,7 @@ class Core:
     @winsize.setter
     def winsize(self, rect: _typing.Tuple[int, int]):
         self.__winsize = rect
-        self.__window = _pygame.display.set_mode(self.__winsize)
+        self.__window = _pygame.display.set_mode(self.__winsize, _pygame.RESIZABLE)
 
     @property
     def title(self) -> str:
