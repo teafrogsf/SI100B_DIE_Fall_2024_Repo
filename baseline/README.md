@@ -226,7 +226,22 @@ namespace game_collections {
 
 ### 类注释
 
-如果一个`ListenerLike`存在被`listening`装饰过的方法，请在「类注释」中的`Listening Methods`章节进行说明。
+如果一个`ListenerLike`存在被`listening`装饰过的方法，请在「类注释」中的`Listening Methods`章节进行说明。格式如下：
+
+```python
+"""
+Listening Methods
+---
+方法名1@事件代码
+    简述功能...
+方法名2@事件代码1, 事件代码2
+    简述功能...
+"""
+```
+
+
+
+### 类注释示例
 
 ```python
 class Player(ListenerLike):
@@ -256,11 +271,45 @@ class Player(ListenerLike):
 
 ### 方法注释
 
+被`listening`修饰的方法都应在函数注释的`Listening`章节标注，格式为
+
+```python
+"""
+Listening
+---
+事件代码 : 事件body格式
+    body的键1 : body的值1类型
+        简述作用...
+    body的键2 : body的值2类型
+        简述作用...
+"""
+```
+
+> * 事件body格式一般是继承了`TypeDict`的类型。如果没有格式要求，请直接填`dict`。
+
+如果方法会发布事件，那么请在`Post`章节标注，格式为
+
+```python
+"""
+Post
+---
+事件代码 : 事件body格式
+    body的键1 : body的值1类型
+        简述作用...
+    body的键2 : body的值2类型
+        简述作用...
+"""
+```
+
+> * 事件body格式一般是继承了`TypeDict`的类型。如果没有格式要求，请直接填`dict`。
+
+### 方法注释示例
+
 ```python
 @listening(DRAW)
 def draw(self, event: EventLike):
     """
-    绘制在画布上绘制实体
+    在画布上绘制实体
 
     Listening
     ---
@@ -279,6 +328,48 @@ def draw(self, event: EventLike):
 >
 > ```python
 > class DrawEventBody(typing.TypedDict):
->     window: pygame.Surface  # 画布
->     camera: tuple[int, int]  # 镜头坐标（/负偏移量）
+>        window: pygame.Surface  # 画布
+>        camera: tuple[int, int]  # 镜头坐标（/负偏移量）
 > ```
+
+---
+
+```python
+@listening(CollisionEventCode.COLLISION_EVENT)
+def collision(self, event: EventLike):
+    """
+    碰撞事件。如果碰撞来自玩家, 那么会切换到战斗场景。
+
+    Listening
+    ---
+    CollisionEventCode.COLLISION_EVENT : CollisionEventBody
+        sender: str
+            碰撞来源UUID
+        charater_type: CharaterType
+            碰撞来源类型
+
+    Post
+    ---
+    SceneEventCode.CHANGE_SCENE : ChangeSceneEventBody
+        new_scene : SceneLike
+            即将切换到的新场景
+    """
+    body: CollisionEventBody = event.body
+    if body["charater_type"] == CharaterType.PLAYER:
+        body: ChangeSceneEventBody = {
+            "new_scene": BattleBox(self.scene.core, self.player, self, self.scene)
+        }
+        event = EventLike(SceneEventCode.CHANGE_SCENE, prior=301, body=body)
+        self.post(event)
+```
+
+>`CollisionEventBody`，`ChangeSceneEventBody`是`TypeDict`字典类型标注
+>
+>```python
+>class CollisionEventBody(typing.TypedDict):
+>    sender: str
+>    charater_type: CharaterType
+>   
+>class ChangeSceneEventBody(typing.TypedDict):
+>    new_scene: SceneLike
+>```
