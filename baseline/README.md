@@ -1,25 +1,30 @@
+* [公告](#公告)
+  * [SI100B_DIE_Fall_2024 Repo版本公告](#[SI100B_DIE_Fall_2024_Repo](https://github.com/teafrogsf/SI100B_DIE_Fall_2024_Repo)版本公告)
+
 * [代码结构](#代码结构)
   * [文件依赖关系](#文件依赖关系)
   * [基类`base/collections.py`](#基类`base/collections.py`)
   * [游戏基类`game_collections.py`](#游戏基类`game_collections.py`)
 * [代码规范](#代码规范)
-  * [`ListenerLike`子类的注释风格补充说明](#`ListenerLike`子类的类注释补充说明)
+  * [`ListenerLike`子类的注释风格补充说明](#`ListenerLike`子类的注释风格补充说明)
 
-# [SI100B_DIE_Fall_2024_Repo](https://github.com/teafrogsf/SI100B_DIE_Fall_2024_Repo)版本备注
+# 公告
+
+## [SI100B_DIE_Fall_2024_Repo](https://github.com/teafrogsf/SI100B_DIE_Fall_2024_Repo)版本公告
 
 * 仓库中
   * **完整提供**的部分有：
     * 『`base`』（`tools.py`、`collections.py`、`constants.py`）
-    * 『`game三件套`』（`game_collections.py`、`game_constants.py`、`utils.py`）。
+    * 『`game三件套`』（`game_collections.py`、`game_constants.py`、`utils.py`）
 
   * **部分提供或不提供**的部分有
     * 『游戏内容』部分
 
-* **『baseline』不强制要求使用**（但希望能提供一些帮助）。
-* **『评分标准』**请参见[lec1n2.pdf](https://github.com/teafrogsf/SI100B_DIE_Fall_2024_Repo/blob/main/lec1n2/lec1n2.pdf)。
-* 后期维护中，可能会更新文档、注释、甚至修复漏洞。请注意`commits`。
+* **『baseline』不强制要求使用**（但希望能提供一些帮助）
+* **『评分标准』**请参见[lec1n2.pdf](https://github.com/teafrogsf/SI100B_DIE_Fall_2024_Repo/blob/main/lec1n2/lec1n2.pdf)
+* 后期维护中，可能会更新文档、注释、甚至修复漏洞；请注意`commits`
 
-> * `hello_world.py`是可以直接运行的小样例。
+> * `hello_world.py`是可以直接运行的小样例
 
 # 代码结构
 
@@ -246,8 +251,6 @@ Listening Methods
     简述功能...
 """
 ```
-
-
 
 ### 类注释示例
 
