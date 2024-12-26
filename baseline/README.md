@@ -7,11 +7,19 @@
 
 # [SI100B_DIE_Fall_2024_Repo](https://github.com/teafrogsf/SI100B_DIE_Fall_2024_Repo)版本备注
 
-* 仓库中的`base`（`tools.py`、`collections.py`、`constants.py`）以及`game三件套`（`game_collections.py`、`game_constants.py`、`utils.py`）是**完整提供**的。但「游戏内容」部分的代码会有<u>部分或全部删减</u>。
-* **Baseline不强制要求使用**，但希望能提供一些帮助。
+* 仓库中
+  * **完整提供**的部分有：
+    * 『`base`』（`tools.py`、`collections.py`、`constants.py`）
+    * 『`game三件套`』（`game_collections.py`、`game_constants.py`、`utils.py`）。
+
+  * **部分提供或不提供**的部分有
+    * 『游戏内容』部分
+
+* **『baseline』不强制要求使用**（但希望能提供一些帮助）。
+* **『评分标准』**请参见[lec1n2.pdf](https://github.com/teafrogsf/SI100B_DIE_Fall_2024_Repo/blob/main/lec1n2/lec1n2.pdf)。
 * 后期维护中，可能会更新文档、注释、甚至修复漏洞。请注意`commits`。
 
-> * `hello_world.py`是可以运行的小样例。
+> * `hello_world.py`是可以直接运行的小样例。
 
 # 代码结构
 
