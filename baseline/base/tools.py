@@ -1,3 +1,23 @@
+"""
+`collections.py`依赖工具包
+
+Methods
+---
+listening
+    装饰函数: 表示这个函数能处理某个事件代码。
+find_listening_methods
+    寻找实例中, 被listening装饰过的方法
+singleton
+    单例类装饰器
+
+Classes
+---
+BarrelQueue
+    高度优化的队列, 用于保证事件队列永远有序(排序规则: 1. 优先级 2.插入顺序), 且插入与弹出的复杂度皆为O(1)。
+DoubleKeyBarrel
+    高度优化的桶。用于快速将事件分发到所有能处理该类型事件(且为接收者)的监听者中。
+"""
+
 import functools as _functools
 import itertools as _itertools
 import typing as _typing

@@ -1,3 +1,36 @@
+"""
+`collections.py`依赖常数库
+
+Constants
+---
+EVERYONE_RECEIVER
+    事件的特殊接收者地址: 所有人
+
+Methods
+---
+get_unused_event_code
+    获取尚未被使用的事件代码, 常用于Enum中分配数字
+
+Event Codes
+---
+EventCode.STEP
+    刻代码, 代表主时钟过去了一刻
+EventCode.DRAW
+    绘制代码
+EventCode.KILL
+    清除代码
+
+Event Body Templates
+---
+StepEventBody
+    STEP事件body模板
+DrawEventBody
+    DRAW事件body模板
+KILL事件body模板
+    KILL事件body模板
+
+"""
+
 import pygame as _pygame
 import typing as _typing
 from enum import IntEnum as _IntEnum
