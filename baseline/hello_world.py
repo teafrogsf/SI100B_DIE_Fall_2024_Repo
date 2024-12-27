@@ -3,6 +3,8 @@
 各种实体的Rect的坐标也是默认为左上角。
 """
 
+import math
+
 import pygame
 
 import utils
@@ -10,15 +12,12 @@ import game_constants as c
 from game_collections import EventLike, Core, listening, EntityLike, GroupLike
 
 
-import pygame
-
-
-class Mob(EntityLike):
+class Player(EntityLike):
     def __init__(
         self,
         rect: pygame.Rect = pygame.Rect(610, 330, 60, 60),  # x, y, width, height
     ):
-        image = utils.load_image_and_scale(r".\assets\npc\monster\1.png", rect)
+        image = utils.load_image_and_scale(r".\assets\player\1.png", rect)
         super().__init__(rect, image=image)
 
     @listening(pygame.KEYDOWN)  # 捕获: 按下按键
@@ -34,10 +33,40 @@ class Mob(EntityLike):
             self.rect.x += 50
 
 
+class WanderNpc(EntityLike):
+    def __init__(
+        self,
+        rect: pygame.Rect = pygame.Rect(400, 330, 60, 60),  # x, y, width, height
+    ):
+        image = utils.load_image_and_scale(r".\assets\npc\npc.png", rect)
+        super().__init__(rect, image=image)
+
+        self.__walking_center: pygame.Rect = self.rect.copy()
+        self.__walking_radius: float = 200
+        self.__walking_radian: float = 0
+
+        self.__max_speed: float = 5
+        self.__speed: float = 0
+
+    @listening(c.EventCode.STEP)
+    def step(self, event: EventLike):
+        body: c.StepEventBody = event.body
+        secord = body["secord"]
+        # ===MOVING
+        if self.__speed < self.__max_speed:
+            self.__speed += self.__max_speed * 0.1 * secord
+        self.__walking_radian += secord * self.__speed
+        shift = utils.IntTupleOper.mul(
+            self.__walking_radius,
+            (math.cos(self.__walking_radian), math.sin(self.__walking_radian)),
+        )
+        self.rect = self.__walking_center.move(*shift)
+
+
 if __name__ == "__main__":
     co = Core()
     group = GroupLike()
-    group.add_listener(Mob())
+    group.add_listener(Player())
     group.add_listener(
         EntityLike(
             pygame.Rect(410, 330, 60, 60),
@@ -46,6 +75,7 @@ if __name__ == "__main__":
             ),
         )
     )
+    group.add_listener(WanderNpc())
 
     while True:
         co.window.fill((0, 0, 0))  # 全屏涂黑

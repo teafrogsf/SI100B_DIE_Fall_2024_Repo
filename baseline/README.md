@@ -1,6 +1,5 @@
 * [公告](#公告)
-  * [SI100B_DIE_Fall_2024 Repo版本公告](#[SI100B_DIE_Fall_2024_Repo](https://github.com/teafrogsf/SI100B_DIE_Fall_2024_Repo)版本公告)
-
+  * [SI100B_DIE_Fall_2024 Repo版本公告](#si100b_die_fall_2024_repo版本公告)
 * [代码结构](#代码结构)
   * [文件依赖关系](#文件依赖关系)
   * [基类`base/collections.py`](#基类`base/collections.py`)
@@ -25,6 +24,10 @@
 * 后期维护中，可能会更新文档、注释、甚至修复漏洞；请注意`commits`
 
 > * `hello_world.py`是可以直接运行的小样例
+
+### 2024/12/27更新
+
+* `hello_world.py`中新增`WanderNpc`类，展示如何实现一个不断绕圈的NPC。
 
 # 代码结构
 
