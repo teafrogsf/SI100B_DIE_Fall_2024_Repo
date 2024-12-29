@@ -392,12 +392,22 @@ class GroupLike(ListenerLike):
 
     Attributes
     ---
+    listeners : set[ListenerLike]
+        所有成员集合
+
+    ---
+
     listen_codes :set[int]
         监听事件类型, 是群组监听类型与所有成员监听类型的并集
     listen_receivers :set[int]
         监听事件接收者, 是群组监听接收者与所有成员监听接收者的并集
-    listeners : set[ListenerLike]
-        所有成员集合
+
+    ---
+
+    uuid : str
+        监听者的通用唯一标识符, 一般是`str(id(self))`
+    post_api : Optional[PostEventApiLike]
+        发布事件函数, 一般使用`Core`的`add_event`
 
     Methods
     ---
@@ -413,8 +423,16 @@ class GroupLike(ListenerLike):
         删除ListenerLike
     clear_listener(self) -> None
         清空群组
+
+    ---
+
     listen(self, event: EventLike) -> None
         群组处理事件, 群组成员处理事件
+
+    ---
+
+    post(self, event: EventLike) -> None
+        发布事件 (`通过self.__post_api`)  (一般是发布到Core的事件队列上)
 
     Listening Methods
     ---
@@ -812,6 +830,7 @@ class Core:
             special_flags,
         )
 
+    # TODO(for TAs): The default values for loop and monotone might be better set to 1 and False, respectively.
     @staticmethod
     def play_music(path: str, loop: int = -1, monotone: bool = True) -> None:
         """

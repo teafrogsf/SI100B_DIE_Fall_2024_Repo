@@ -1,2 +1,11 @@
-
+__pycache__
 *.pyc
+
+# 游戏内容
+base/_edu_collections0.py
+charaters.py
+handler.py
+landscape.py
+pop_up_box.py
+scene.py
+__main__.py

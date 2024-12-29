@@ -51,6 +51,17 @@ class EntityLike(ListenerLike, pygame.sprite.Sprite):
     image : pygame.Surface
         实体图像
 
+    ---
+
+    listen_receivers : set[int]
+        监听的接收者 (一般包含监听发送往自己 (UUID) 以及"任何人"`EVERYONE_RECEIVER`的事件)
+    listen_codes : set[int]
+        监听的事件代码
+    uuid : str
+        监听者的通用唯一标识符, 一般是`str(id(self))`
+    post_api : Optional[PostEventApiLike]
+        发布事件函数, 一般使用`Core`的`add_event`
+
     Methods
     -------
     draw@DRAW
@@ -143,6 +154,9 @@ class EntityLike(ListenerLike, pygame.sprite.Sprite):
             window.blit(self.image, rect)
 
 
+# TODO(for TAs): Define the class LayerLike as the parent class of SceneLike
+
+
 class SceneLike(GroupLike):
     """
     场景类, 主要提供相机坐标, 图层控制, 以及进入与退出
@@ -158,12 +172,57 @@ class SceneLike(GroupLike):
     layers : collections.defaultdict[int, List[ListenerLike]]
         图层。键为整数, 代表绘制顺序 (从小到大)
 
+    ---
+
+    listeners : set[ListenerLike]
+        所有成员集合
+    listen_codes :set[int]
+        监听事件类型, 是群组监听类型与所有成员监听类型的并集
+    listen_receivers :set[int]
+        监听事件接收者, 是群组监听接收者与所有成员监听接收者的并集
+    uuid : str
+        监听者的通用唯一标识符, 一般是`str(id(self))`
+    post_api : Optional[PostEventApiLike]
+        发布事件函数, 一般使用`Core`的`add_event`
+
     Methods
     -------
     into()
         进入场景
     leave()
         离开场景
+
+    ---
+
+    listen(self, event: EventLike) -> None
+        场景本体处理事件, 场景内成员 (`self.listeners`) 处理事件 (除了DRAW事件) 。
+
+    ---
+
+    group_listen(self, event: EventLike) -> None
+        群组本体处理事件
+    member_listen(self, event: EventLike) -> None
+        群组成员处理事件
+    get_listener(self, codes: set[int], receivers: set[str]) -> set[ListenerLike]
+        筛选ListenerLike
+    add_listener(self, listener: ListenerLike) -> None
+        添加ListenerLike
+    remove_listener(self, listener: ListenerLike) -> None
+        删除ListenerLike
+    clear_listener(self) -> None
+        清空群组
+    post(self, event: EventLike) -> None
+        发布事件 (`通过self.__post_api`)  (一般是发布到Core的事件队列上)
+
+    Listening Methods
+    ---
+    draw@DRAW
+        根据图层顺序, 在画布上绘制实体
+
+    ---
+
+    kill@KILL
+        从群组与图层中从删除成员
     """
 
     # attributes
@@ -266,15 +325,19 @@ class SceneLike(GroupLike):
     @listening(c.EventCode.DRAW)
     def draw(self, event: EventLike):
         """
-        根据图层顺序, 在画布上绘制实体
+        根据图层顺序, 在画布上绘制实体。
+
+        Notes
+        ---
+        无视`event.body`传入的参数, 使用`self.camera_cord`与`self.core.window`绘图。
 
         Listening
         ---
         DRAW : DrawEventBody
             window : pygame.Surface
-                画布
+                画布（该参数无效，永远使用`self.core.window`代替该参数。）
             camera : tuple[int, int]
-                镜头坐标（/负偏移量）
+                镜头坐标（/负偏移量）（该参数无效，永远使用`self.camera_cord`代替该参数。）
 
         Notes
         ---
