@@ -88,7 +88,7 @@ class IntTupleOper:
 
 class RectOper:
     """
-    仿Numpy的`pygame.Rect`基础运算函数实现 (带有广播机制)
+    仿Numpy的`pygame.Rect`基础运算函数实现
 
     同时对`size`与`topleft`进行运算。
     """

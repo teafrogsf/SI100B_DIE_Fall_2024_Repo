@@ -1,3 +1,17 @@
+"""
+`base/collection.py`的扩展包
+
+实现了游戏中常用的实体类`EntityLike`和场景类`SceneLike`。
+
+Classes
+---
+EntityLike
+    实体类, 继承了`pygame.sprite.Sprite`类并提供了`mask`、`rect`、`image`属性方便进行碰撞检测。
+    会监听`DRAW`事件, 默认使用`self.image`进行绘制。
+SceneLike
+    场景类, 主要提供相机坐标, 图层控制, 以及进入与退出
+"""
+
 from typing import (
     List,
     Dict,
