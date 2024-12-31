@@ -1,12 +1,23 @@
 import typing as _typing
-import pygame as _pygame
 from enum import IntEnum as _IntEnum
 
+import pygame as _pygame
 
 from base.constants import *
 
 if _typing.TYPE_CHECKING:
     from game_collections import SceneLike
+
+DEBUG = True
+RGBAOutput = _typing.Tuple[int, int, int, int]
+ColorValue = _typing.Union[
+    _pygame.Color,
+    int,
+    str,
+    _typing.Tuple[int, int, int],
+    RGBAOutput,
+    _typing.Sequence[int],
+]
 
 
 class CharaterType(_IntEnum):
@@ -17,7 +28,7 @@ class CharaterType(_IntEnum):
 
 
 class SceneCode(_IntEnum):
-    START_MEUN = get_unused_event_code()
+    START_MENU = get_unused_event_code()
     CITY = get_unused_event_code()
     WILD = get_unused_event_code()
     BOSS_SCENE = get_unused_event_code()

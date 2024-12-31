@@ -126,39 +126,39 @@ class EventLike:
         return ins
 
     @classmethod
-    def step_event(cls, secord: float) -> "EventLike":
+    def step_event(cls, second: float) -> "EventLike":
         """
         创建STEP事件
 
         Parameters
         ---
-        secord : float
+        second : float
             距离上次广播STEP事件经过的时间
         """
-        body: c.StepEventBody = {"secord": secord}
+        body: c.StepEventBody = {"second": second}
         return cls(c.EventCode.STEP, body=body, prior=200)
 
     @classmethod
     def draw_event(
         cls,
-        window: pygame.Surface,
+        surface: pygame.Surface,
         *,
         receivers: Set[str] = None,
-        camera: Tuple[int, int] = (0, 0),
+        offset: Tuple[int, int] = (0, 0),
     ) -> "EventLike":
         """
         创建DRAW事件
 
         Parameters
         ---
-        window : pygame.Surface
+        surface : pygame.Surface
             一般是pygame.display.set_mode(...)返回的Surface对象, 占满整个窗口的画布
         receivers : set[str], typing.Optional, default = {EVERYONE_RECEIVER}
             事件接收者, 默认是任何Listener
-        camera : tuple[int, int], default = (0, 0)
-            相机位置, 绘制偏移量
+        offset : tuple[int, int], default = (0, 0)
+            绘制偏移量
         """
-        body = {"window": window, "camera": camera}
+        body = {"surface": surface, "offset": offset}
         return cls(c.EventCode.DRAW, body=body, prior=300, receivers=receivers)
 
 
@@ -491,9 +491,30 @@ class Core:
     核心
 
     管理事件队列, 窗口, 刻, pygame api
+
+    Notes
+    ---
+    - 单例类, 每次初始化都返回相同的实例
+
+    Attributes
+    ---
+    queue_injectors : list[Callable[[Core], None]]
+        每次执行`self.yield_events`时, 先执行的函数列表。常用于往事件队列中初始化事件。
     """
 
     def __init__(self):
+        def ADD_PYGAME_EVENTS(core: Core):
+            pygame_events = [EventLike.from_pygame_event(i) for i in pygame.event.get()]
+            core.__event_queue.extend(pygame_events)
+            for event in filter(lambda x: x.code == pygame.VIDEORESIZE, pygame_events):
+                core.winsize = (event.w, event.h)
+
+        def ADD_STEP(core: Core):
+            core.__event_queue.append(core.get_step_event())
+
+        def ADD_DRAW(core: Core):
+            core.__event_queue.append(EventLike.draw_event(core.window))
+
         self.__winsize: Tuple[int, int] = (1280, 720)  # width, height
         self.__title: str = "The Bizarre Adventure of the Pufferfish"
         self.__rate: float = 0
@@ -501,31 +522,23 @@ class Core:
         self.__clock: pygame.time.Clock = pygame.time.Clock()
         self.__event_queue: List[EventLike] = []
 
+        self.queue_injectors: list[Callable[[Core], None]] = [
+            ADD_PYGAME_EVENTS,
+            ADD_STEP,
+            ADD_DRAW,
+        ]
+
         self.init()
         pygame.display.set_caption(self.__title)
 
     # event
     def yield_events(
         self,
-        *,
-        add_pygame_event: bool = True,
-        add_step: bool = True,
-        add_draw: bool = True,
     ) -> Iterable[EventLike]:
         """
         生成事件
 
         将事件队列的所有事件都yield出来 (根据优先级), 直到事件队列为空
-
-        Parameters
-        ---
-        add_pygame_event : bool, default = True
-            是否自动加入`pygame.event.get()`的事件
-        add_step : bool, default = True
-            是否自动加入STEP事件
-        add_draw : bool, default = True
-            是否自动加入DRAW事件
-
         Yields
         ---
         EventLike
@@ -539,14 +552,8 @@ class Core:
             deal(event)
         ```
         """
-        if add_pygame_event:
-            self.__event_queue.extend(
-                (EventLike.from_pygame_event(i) for i in pygame.event.get())
-            )
-        if add_step:
-            self.__event_queue.append(self.get_step_event())
-        if add_draw:
-            self.__event_queue.append(EventLike.draw_event(self.window))
+        for inject in self.queue_injectors:
+            inject(self)
         while self.__event_queue:
             self.__event_queue.sort()
             yield self.__event_queue.pop(0)
@@ -703,7 +710,7 @@ class Core:
         )
 
     @staticmethod
-    def play_music(path: str, loop: int = -1, monotone: bool = True):
+    def play_music(path: str, *, loop: int = 1, monotone: bool = False):
         """
         播放音乐
 
@@ -711,9 +718,9 @@ class Core:
         ---
         path : str
             音乐路径
-        loop : int, default = -1
+        loop : int, default = 1
             循环次数, `-1`为无限循环
-        monotone : bool, default = True
+        monotone : bool, default = False
             是否仅播放该音乐
         """
         if monotone:

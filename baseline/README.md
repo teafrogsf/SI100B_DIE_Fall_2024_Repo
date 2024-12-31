@@ -29,6 +29,31 @@
 
 * `hello_world.py`中新增`WanderNpc`类，展示如何实现一个不断绕圈的NPC。
 
+### 2024/12/31更新
+
+> [!WARNING]
+>
+> 以下是非向前兼容更新
+
+* `StepEventBody`中，`secord`单词拼写有误，现已修复为`second`
+* `DrawEventBody`中，`window`与`camera`改名为`surface`与`offset`
+* `SceneCode.START_MEUN`更名为`SceneCode.START_MENU`
+* `SceneLike`删除`caches`属性
+* `Core`有若干修改
+  * 每`tick`初始事件由`queue_injectors`控制，而不再由`yield_events`的参数控制
+  * `play_music`方法默认参数有变化
+
+* `utils.py`的`IntTupleOper`的取整函数引入了一定的随机性
+
+> [!NOTE]
+>
+> 以下是向前兼容更新
+
+* `game_collections.py`新增`TextEntity`类
+* 新增`LayerLike`
+* 新增`game_constants.py`新增`DEBUG`的flag，默认为`True`。一些实体的行为会受到影响
+* `hello_world.py`新增一个文本框
+
 # 代码结构
 
 * 本项目基于`python 3.8+`
@@ -74,6 +99,7 @@ namespace game三件套 {
 class game_collections{
 	EntityLike
 	SceneLike
+	TextEntity
 }
 class game_constants
 class utils
@@ -156,13 +182,14 @@ namespace collections {
     }
     
     class Core {
+    	+queue_injectors: list[Callable[[Core], None]]
         +winsize: Tuple[int, int]
         +title: str
         +window: pygame.Surface
         +clock: pygame.time.Clock
         +time_ms: int
         +rate: float
-        +yield_events(...) Generator[EventLike, None, None]
+        +yield_events(self) Generator[EventLike, None, None]
         +add_event(event EventLike) None
         +clear_event() None
         +get_step_event() EventLike
@@ -201,8 +228,7 @@ namespace collections {
     
     class Core
 }
-ListenerLike <|-- GroupLike
-
+GroupLike --> ListenerLike
 
 namespace game_collections {
     class EntityLike {
@@ -212,23 +238,35 @@ namespace game_collections {
         +draw(@DRAW)
     }
 
+    class TextEntity {
+        +font : pygame.font.Font
+        +font_color : c.ColorValue
+        +back_ground : c.ColorValue
+        +set_text(self, text: str = "") None
+        +get_zh_font(font_size: int, *, bold=False, italic=False) pygame.font.Font
+    }
+
+    class LayerLike {
+        +layers : defaultdict[int, list[ListenerLike]]
+        +draw(@DRAW)
+        +kill(@KILL)
+    }
 
     class SceneLike {
     	+is_activated : bool
-        +layers : defaultdict[int, list[ListenerLike]]
-        +caches : dict[str, Any]
         +camera_cord : tuple[int, int]
         +core : Core
         +into() None
         +leave() None
         +draw(@DRAW)
-        +kill(@KILL)
     }
     
 }
     EntityLike --> ListenerLike
     EntityLike --> Sprite
-    SceneLike --> GroupLike
+    LayerLike --> GroupLike
+    SceneLike --> LayerLike
+    TextEntity --> EntityLike
 ```
 
 # 代码规范
@@ -328,22 +366,22 @@ def draw(self, event: EventLike):
     Listening
     ---
     DRAW : DrawEventBody
-        window : pygame.Surface
+        surface : pygame.Surface
         	画布
-        camera : tuple[int, int]
-        	镜头坐标（/负偏移量）
+        offset : tuple[int, int]
+        	绘制偏移量
     """
     body: DrawEventBody = event.body
-    window: pygame.Surface = body["window"]
-    camera: Tuple[int, int] = body["camera"]
+    surface: pygame.Surface = body["surface"]
+    offset: Tuple[int, int] = body["offset"]
 ```
 
 > DrawEventBody是`TypeDict`字典类型标注
 >
 > ```python
 > class DrawEventBody(typing.TypedDict):
->        window: pygame.Surface  # 画布
->        camera: tuple[int, int]  # 镜头坐标（/负偏移量）
+>        surface: pygame.Surface  # 画布
+>        offset: tuple[int, int]  # 绘制偏移量
 > ```
 
 ---
