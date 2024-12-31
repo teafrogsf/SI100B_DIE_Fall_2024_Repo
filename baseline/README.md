@@ -52,6 +52,8 @@
 * `game_collections.py`新增`TextEntity`类
 * 新增`LayerLike`
 * 新增`game_constants.py`新增`DEBUG`的flag，默认为`True`。一些实体的行为会受到影响
+  * 比如`EntityLike`会显示红色方框和坐标，并且左上角会连接到实体所在坐标系的原点。
+
 * `hello_world.py`新增一个文本框
 
 # 代码结构
