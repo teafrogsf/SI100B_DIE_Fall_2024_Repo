@@ -4,12 +4,22 @@
 """
 
 import math
+import random
+from typing import Tuple, Optional
 
 import pygame
 
 import utils
 import game_constants as c
-from game_collections import EventLike, Core, listening, EntityLike, GroupLike
+from game_collections import (
+    EventLike,
+    Core,
+    listening,
+    EntityLike,
+    GroupLike,
+    ListenerLike,
+    TextEntity,
+)
 
 
 class Player(EntityLike):
@@ -51,11 +61,11 @@ class WanderNpc(EntityLike):
     @listening(c.EventCode.STEP)
     def step(self, event: EventLike):
         body: c.StepEventBody = event.body
-        secord = body["secord"]
+        second = body["second"]
         # ===MOVING
         if self.__speed < self.__max_speed:
-            self.__speed += self.__max_speed * 0.1 * secord
-        self.__walking_radian += secord * self.__speed
+            self.__speed += self.__max_speed * 0.1 * second
+        self.__walking_radian += second * self.__speed
         shift = utils.IntTupleOper.mul(
             self.__walking_radius,
             (math.cos(self.__walking_radian), math.sin(self.__walking_radian)),
@@ -63,22 +73,54 @@ class WanderNpc(EntityLike):
         self.rect = self.__walking_center.move(*shift)
 
 
+class StateShow(TextEntity):
+    def __init__(self, rect=pygame.Rect(640, 550, 1, 1)):
+        super().__init__(
+            rect,
+            font=TextEntity.get_zh_font(36),
+            font_color=(255, 255, 255),
+            back_ground=(0, 0, 0, 100),
+            dynamic_size=True,
+        )
+        self.__cum_second = 4
+        self.__cum_tick = 0
+        self.center = self.rect.center
+
+    @listening(c.EventCode.STEP)
+    def step(self, event: EventLike):
+        body: c.StepEventBody = event.body
+        second = body["second"]
+        self.__cum_second += second
+        self.__cum_tick += 1
+        if self.__cum_second > 5:
+            self.set_text(
+                f"""目前的TPS是: {self.__cum_tick / self.__cum_second:5.0f}\n{random.choice(utils.zote_precepts)}"""
+            )
+            self.__cum_second = 0
+            self.__cum_tick = 0
+            self.rect.center = self.center
+
+
 if __name__ == "__main__":
     co = Core()
     group = GroupLike()
-    group.add_listener(Player())
-    group.add_listener(
-        EntityLike(
-            pygame.Rect(410, 330, 60, 60),
-            image=utils.load_image_and_scale(
-                r".\assets\tiles\tree.png", pygame.Rect(510, 330, 60, 60)
-            ),
-        )
+    player = Player()
+
+    tree = EntityLike(
+        pygame.Rect(410, 330, 60, 60),
+        image=utils.load_image_and_scale(
+            r".\assets\tiles\tree.png", pygame.Rect(510, 330, 60, 60)
+        ),
     )
-    group.add_listener(WanderNpc())
+    wander_npc = WanderNpc()
+    state_show = StateShow()
+    group.add_listener(player)
+    group.add_listener(wander_npc)
+    group.add_listener(tree)
+    group.add_listener(state_show)
 
     while True:
-        co.window.fill((0, 0, 0))  # 全屏涂黑
+        co.window.fill((255, 255, 255))  # 全屏涂黑
         for event in co.yield_events():
             group.listen(event)  # 听取: 核心事件队列
         co.flip()  # 更新屏幕缓冲区

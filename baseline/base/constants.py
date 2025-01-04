@@ -70,7 +70,7 @@ class StepEventBody(_typing.TypedDict):
     STEP事件body模板
     """
 
-    secord: float  # 距离上一次游戏刻发生经过的时间（秒）
+    second: float  # 距离上一次游戏刻发生经过的时间（秒）
 
 
 class DrawEventBody(_typing.TypedDict):
@@ -78,8 +78,8 @@ class DrawEventBody(_typing.TypedDict):
     DRAW事件body模板
     """
 
-    window: _pygame.Surface  # 画布
-    camera: tuple[int, int]  # 镜头坐标（/负偏移量）
+    surface: _pygame.Surface  # 画布
+    offset: tuple[int, int]  # 绘制偏移量
 
 
 class KillEventBody(_typing.TypedDict):

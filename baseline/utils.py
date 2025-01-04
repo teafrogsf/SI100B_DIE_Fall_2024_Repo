@@ -1,18 +1,24 @@
-from typing import (
-    Callable,
-    Tuple,
-    Union,
-    TypedDict,
-)
+from typing import Callable, Tuple, Union, TypedDict, Optional
 from collections.abc import Iterable
-
 import math
+import functools
+import random
 
 import pygame
 
 _NumberLike = Union[float, int]
 _TupleLike = Union[Tuple[_NumberLike], _NumberLike]
 _IntTupleLike = Union[Tuple[int], int]
+
+
+@functools.cache
+def debug_text(text: str) -> pygame.Surface:
+    font = pygame.font.Font(None, 18)
+    return font.render(
+        text,
+        True,
+        (255, 0, 0),
+    )
 
 
 @staticmethod
@@ -24,6 +30,17 @@ def l2norm(a: Union[_NumberLike, Iterable[_NumberLike]]) -> float:
         return sum(i**2 for i in a) ** 0.5
     else:
         raise TypeError(f"Only accecpt tuple[number] or number.")
+
+
+def rint(number: float) -> int:
+    """
+    Examples
+    ---
+    - `rint(10.3)`有30%返回`11`, 70%概率返回`10`
+    """
+    integer = math.floor(number)
+    fraction = number - integer
+    return int(integer) + (random.random() < fraction)
 
 
 class IntTupleOper:
@@ -48,14 +65,14 @@ class IntTupleOper:
         operator: Callable[[_NumberLike, _NumberLike], _NumberLike],
     ) -> _IntTupleLike:
         if isinstance(a, (int, float)) and isinstance(b, (int, float)):
-            return int(operator(a, b))
+            return rint(operator(a, b))
 
         if isinstance(b, (int, float)):  # 广播机制
             b = tuple(b for _ in a)
         elif isinstance(a, (int, float)):  # 广播机制
             a = tuple(a for _ in b)
 
-        return tuple(int(operator(i, j)) for i, j in zip(a, b))
+        return tuple(rint(operator(i, j)) for i, j in zip(a, b))
 
     @classmethod
     def add(cls, a: _TupleLike, b: _TupleLike) -> _IntTupleLike:
@@ -183,7 +200,7 @@ zote_precepts = [
     "戒律二十六：不要相信你的倒影。当你对着某\n些光亮的表面时，你可能会看到一张自己的脸\n。而且这张脸会模仿你的各个动作，看起来就\n和你一模一样，但请你不要因此而相信它。",
     "戒律二十七：要尽量多吃。吃饭时，能吃多少\n吃多少。这能让你获得足够多的能量，而且还\n间接地减少了吃饭的次数。",
     "戒律二十八：永远不要凝视黑暗。如果当你凝\n视黑暗而久久不见一物时，你的大脑就会开始\n流连于陈旧的记忆，而戒律四已经说过了，要\n学会忘记过去，避免在过去的记忆中无休止地\n纠缠。",
-    "戒律二十九：要刻意训练你的方向感。在蜿蜒\n曲折的洞穴中旅行很容易迷路。而有一个好的\n方向感就像有一张神奇的地图在你的脑子里，这非常有用。",
+    "戒律二十九：要刻意训练你的方向感。在蜿蜒\n曲折的洞穴中旅行很容易迷路。而有一个好的\n方向感就像有一张神奇的地图在你的脑子里，\n这非常有用。",
     "戒律三十：永远不要轻信别人的诺言。诺言有\n时候并不是很可靠，因为许诺者经常会食言，\n所以，不要轻信它，尤其是爱情或者婚姻的诺言。",
     "戒律三十一：要注意个人卫生。要知道，在脏\n兮兮的地方呆得太久是会让你生病的。所以，\n如果去别人家里，请要求主人给你提供最高\n规格的卫生条件。",
     "戒律三十二：名字有其内在的力量。所有的名\n字都有其内在的力量，所以，当你在给某个事\n物起名字的时候，你其实就是在赋予它力量。\n比如，我就给我自己的骨钉取名为“生命终结\n者”。",
