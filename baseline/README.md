@@ -56,6 +56,23 @@
 
 * `hello_world.py`新增一个文本框
 
+### 2025/1/5更新
+
+> [!WARNING]
+>
+> 以下是非向前兼容更新
+
+* 删除无法读取的`assets/bgm/electronic.mp3`
+* `base/collections.py`的`Core`的`play_music`以及`stop_music`被移除
+  * 相关功能移动到`utils.py`的`PygameApis`类中
+
+
+> [!NOTE]
+>
+> 以下是向前兼容更新
+
+* `assets`增加若干`bgm`与`sound`
+
 # 代码结构
 
 * 本项目基于`python 3.8+`
@@ -100,6 +117,7 @@ tools <|-- collections
 namespace game三件套 {
 class game_collections{
 	EntityLike
+	LayerLike
 	SceneLike
 	TextEntity
 }
@@ -200,8 +218,6 @@ namespace collections {
         +init() None
         +exit() None
         +blit(...) pygame.Rect
-        +play_music(...) None
-        +stop_music() None
     }
 }
 ListenerLike <|-- GroupLike
@@ -210,9 +226,13 @@ ListenerLike <|-- GroupLike
 ## 游戏基类`game_collections.py`
 
 * `EntityLike`
-  * 实现了`rect`、`mask`、`image`，并且能接收`DRAW`事件绘制自身
+  * 实体类，实现了`rect`、`mask`、`image`，能接收`DRAW`事件，并根据`image`绘制自身
+* `TextEntity`
+  * 文本框（继承了实体类）
+* `LayerLike`
+  * 图层管理，用于保证绘制顺序（接收`DRAW`事件会根据图层顺序渲染场景实体）
 * `SceneLike`
-  * 管理场景内容，并提供了图层机制（接收`DRAW`事件会根据图层顺序渲染场景实体）
+  * 管理场景内容（继承了图层）
 
 ```mermaid
 classDiagram

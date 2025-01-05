@@ -331,28 +331,44 @@ class DoubleKeyBarrel(_typing.Generic[_Element]):
     @property
     def keys1(self) -> _typing.Set[_Key1]:
         """键1集合"""
-        return set(map(lambda x: x[0], self.__barrels))
+        key = "keys1"
+        value = self.__caches.get(key)
+        if value is None:
+            value = set(map(lambda x: x[0], self.__barrels))
+            self.__caches[key] = value
+        return value
 
     @property
     def keys2(self) -> _typing.Set[_Key2]:
         """键2集合"""
-        return set(map(lambda x: x[1], self.__barrels))
+        key = "keys2"
+        value = self.__caches.get(key)
+        if value is None:
+            value = set(map(lambda x: x[1], self.__barrels))
+            self.__caches[key] = value
+        return value
 
     def __init__(
         self,
         get_keys1: _typing.Callable[[_Element], _typing.Iterable[_Key1]],
         get_keys2: _typing.Callable[[_Element], _typing.Iterable[_Key2]],
     ):
+        # 主功能
         self.__get_keys1: _typing.Callable[[_Element], _Key1] = get_keys1
         self.__get_keys2: _typing.Callable[[_Element], _Key2] = get_keys2
         self.__barrels: _typing.Dict[
             _typing.Tuple[_Key1, _Key2],
             _typing.Set[_Element],
         ] = {}
+        # __iter__优化
         self.__all_elements: _typing.Set[_Element] = set()
+        self.__caches: _typing.Dict = {}
 
     def __iter__(self) -> _typing.Iterable[_Element]:
         return iter(self.__all_elements)
+
+    def __len__(self) -> int:
+        return len(self.__all_elements)
 
     def __in__(self, item: _Element):
         return item in self.__all_elements
@@ -395,6 +411,7 @@ class DoubleKeyBarrel(_typing.Generic[_Element]):
         item : Element
             元素
         """
+        self.__caches.clear()
         self.__all_elements.add(item)
 
         comb_keys = self.__get_comb_keys(item)
@@ -417,6 +434,7 @@ class DoubleKeyBarrel(_typing.Generic[_Element]):
         KeyError
             如果元素不存在
         """
+        self.__caches.clear()
         self.__all_elements.remove(item)
 
         comb_keys = self.__get_comb_keys(item)
@@ -429,3 +447,4 @@ class DoubleKeyBarrel(_typing.Generic[_Element]):
         """清空元素"""
         self.__all_elements.clear()
         self.__barrels.clear()
+        self.__caches.clear()

@@ -42,6 +42,14 @@ class Player(EntityLike):
         if keys[pygame.K_d]:
             self.rect.x += 50
 
+    @listening(pygame.KEYDOWN)
+    @listening(pygame.QUIT)
+    def quit(self, event: EventLike):
+        if event.code == pygame.QUIT:
+            exit()
+        if event.code == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            exit()
+
 
 class WanderNpc(EntityLike):
     def __init__(
