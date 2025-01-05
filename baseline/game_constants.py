@@ -8,7 +8,7 @@ from base.constants import *
 if _typing.TYPE_CHECKING:
     from game_collections import SceneLike
 
-DEBUG = True
+DEBUG = False
 RGBAOutput = _typing.Tuple[int, int, int, int]
 ColorValue = _typing.Union[
     _pygame.Color,

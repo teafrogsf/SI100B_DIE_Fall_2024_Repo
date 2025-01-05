@@ -21,6 +21,8 @@ from game_collections import (
     TextEntity,
 )
 
+c.DEBUG = True
+
 
 class Player(EntityLike):
     def __init__(

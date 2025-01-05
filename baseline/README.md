@@ -51,8 +51,8 @@
 
 * `game_collections.py`新增`TextEntity`类
 * 新增`LayerLike`
-* 新增`game_constants.py`新增`DEBUG`的flag，默认为`True`。一些实体的行为会受到影响
-  * 比如`EntityLike`会显示红色方框和坐标，并且左上角会连接到实体所在坐标系的原点。
+* 新增`game_constants.py`新增`DEBUG`的flag，默认为`True`。一些实体的行为会受到影响。
+  * 比如`EntityLike`会显示**红色方框和坐标**，并且左上角会连接到实体所在坐标系的原点
 
 * `hello_world.py`新增一个文本框
 
@@ -72,6 +72,7 @@
 > 以下是向前兼容更新
 
 * `assets`增加若干`bgm`与`sound`
+* `game_constants.py`的`DEBUG`现在默认为`False`
 
 # 代码结构
 
