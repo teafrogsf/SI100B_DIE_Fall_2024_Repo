@@ -1,13 +1,17 @@
 """
 `base/collection.py`的扩展包
 
-实现了游戏中常用的实体类`EntityLike`和场景类`SceneLike`。
+实现了游戏中常用的实体类`EntityLike`、文本框`TextEntity`、图层`LayerLike`、场景`SceneLike`
 
 Classes
 ---
 EntityLike
     实体类, 继承了`pygame.sprite.Sprite`类并提供了`mask`、`rect`、`image`属性方便进行碰撞检测。
     会监听`DRAW`事件, 默认使用`self.image`进行绘制。
+TextEntity
+    文本框 (左上对齐)
+LayerLike
+    图层（管理绘制顺序）
 SceneLike
     场景类, 主要提供相机坐标, 图层控制, 以及进入与退出
 """
@@ -151,10 +155,10 @@ class EntityLike(ListenerLike, pygame.sprite.Sprite):
         offset: Tuple[int, int] = body["offset"]
 
         rect = self.rect.move(offset)
-        if self.image is not None:
-            surface.blit(self.image, rect)
+        surface.blit(self.image, rect)
 
         if c.DEBUG:
+            # DEBUG框绘制 (红色碰撞箱, 连接到原点的直线, 碰撞箱坐标)
             RED = (255, 0, 0)
             # rect
             pygame.draw.rect(surface, RED, rect, width=1)
@@ -486,7 +490,7 @@ class SceneLike(LayerLike):
 
 class TextEntity(EntityLike):
     """
-    文字框 (左上对齐)
+    文本框 (左上对齐)
 
     Methods
     ---

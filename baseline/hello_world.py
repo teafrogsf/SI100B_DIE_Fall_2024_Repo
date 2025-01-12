@@ -21,6 +21,8 @@ from game_collections import (
     TextEntity,
 )
 
+c.DEBUG = True
+
 
 class Player(EntityLike):
     def __init__(
@@ -41,6 +43,14 @@ class Player(EntityLike):
             self.rect.y += 50
         if keys[pygame.K_d]:
             self.rect.x += 50
+
+    @listening(pygame.KEYDOWN)
+    @listening(pygame.QUIT)
+    def quit(self, event: EventLike):
+        if event.code == pygame.QUIT:
+            exit()
+        if event.code == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            exit()
 
 
 class WanderNpc(EntityLike):

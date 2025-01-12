@@ -19,6 +19,7 @@ Notes
 
 import typing as _typing
 import sys as _sys
+import types as _types
 
 import pygame as _pygame
 
@@ -153,8 +154,8 @@ class EventLike:
         assert isinstance(code, int)
         assert isinstance(prior, int)
         assert isinstance(sender, str)
-        assert isinstance(receivers, (set, None.__class__))
-        assert isinstance(body, (dict, None.__class__))
+        assert isinstance(receivers, (set, _types.NoneType))
+        assert isinstance(body, (dict, _types.NoneType))
         self.code: int = code
         self.prior: int = prior
         self.sender: str = sender
@@ -838,29 +839,3 @@ class Core:
             area,
             special_flags,
         )
-
-    @staticmethod
-    def play_music(path: str, *, loop: int = 1, monotone: bool = False) -> None:
-        """
-        播放音乐
-
-        Parameters
-        ---
-        path : str
-            音乐路径
-        loop : int, default = 1
-            循环次数, `-1`为无限循环
-        monotone : bool, default = False
-            是否仅播放该音乐
-        """
-        if monotone:
-            _pygame.mixer.music.stop()
-        _pygame.mixer.music.load(path)
-        _pygame.mixer.music.play(loop)
-
-    @staticmethod
-    def stop_music() -> None:
-        """
-        停止音乐
-        """
-        _pygame.mixer.music.stop()

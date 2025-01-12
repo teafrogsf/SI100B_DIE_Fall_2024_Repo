@@ -17,6 +17,7 @@ Notes
 - 字符串形式的类型标注是延迟变量解析（比如`-> "EventLike"`)
 """
 
+# TODO (for TAs): edu_collections seems have higher TPS, ticks count by step event. But seems not that high, maybe somewhere got wrong.
 from typing import (
     Dict,
     Tuple,
@@ -557,7 +558,6 @@ class Core:
         while self.__event_queue:
             self.__event_queue.sort()
             yield self.__event_queue.pop(0)
-        yield self.get_step_event()
 
     def add_event(self, event: EventLike) -> None:
         """
@@ -648,7 +648,6 @@ class Core:
     @rate.setter
     def rate(self, tick_rate: float):
         self.__rate = tick_rate
-        self.__clock.tick(self.__rate)
 
     def tick(self, tick_rate: float = None) -> int:
         """

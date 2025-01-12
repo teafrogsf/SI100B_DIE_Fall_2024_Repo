@@ -11,6 +11,61 @@ _TupleLike = Union[Tuple[_NumberLike], _NumberLike]
 _IntTupleLike = Union[Tuple[int], int]
 
 
+class PygameApis:
+    @staticmethod
+    def play_music(path: str, *, loop: int = -1) -> None:
+        """
+        切换并播放背景音乐
+
+        Notes
+        ---
+        旧的背景音乐会被覆盖掉
+
+        Parameters
+        ---
+        path : str
+            音乐路径
+        loop : int, default = -1
+            循环次数, `-1`为无限循环
+        """
+        pygame.mixer.music.load(path)
+        pygame.mixer.music.play(loops=loop)
+
+    @staticmethod
+    def stop_music() -> None:
+        """
+        停止背景音乐
+        """
+        pygame.mixer.music.stop()
+
+    @staticmethod
+    def play_sound(path: str, *, loop: int = 0) -> pygame.mixer.Sound:
+        """
+        播放音效
+
+        Parameters
+        ---
+        path : str
+            音乐路径
+        loop : int, default = 0
+            循环次数, `-1`为无限循环
+
+        Returns
+        ---
+        pygame.mixer.Sound
+        """
+        sound = pygame.mixer.Sound(path)
+        sound.play(loops=loop)
+        return sound
+
+    @staticmethod
+    def stop_sound() -> None:
+        """
+        停止所有音效
+        """
+        pygame.mixer.stop()
+
+
 @functools.cache
 def debug_text(text: str) -> pygame.Surface:
     font = pygame.font.Font(None, 18)
